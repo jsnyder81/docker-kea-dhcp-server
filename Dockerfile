@@ -1,7 +1,8 @@
 FROM alpine:latest as builder
 
-ARG KEA_DHCP_VERSION=1.3.0
-ARG LOG4_CPLUS_VERSION=1.2.1
+ARG KEA_DHCP_VERSION=1.7.4
+ARG LOG4_CPLUS_VERSION=2.0.5
+ARG LOG4_CPLUS_TAG=REL_2_0_5
 
 RUN apk add --no-cache --virtual .build-deps \
         alpine-sdk \
@@ -12,7 +13,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libressl-dev \
         mariadb-dev \
         zlib-dev && \
-    curl -sL https://sourceforge.net/projects/log4cplus/files/log4cplus-stable/${LOG4_CPLUS_VERSION}/log4cplus-${LOG4_CPLUS_VERSION}.tar.gz | tar -zx -C /tmp && \
+    curl -sL https://github.com/log4cplus/log4cplus/releases/download/${LOG4_CPLUS_TAG}/log4cplus-${LOG4_CPLUS_VERSION}.tar.gz | tar -zx -C /tmp && \
     cd /tmp/log4cplus-${LOG4_CPLUS_VERSION} && \
     ./configure && \
     make -s -j$(nproc) && \
@@ -28,14 +29,17 @@ RUN apk add --no-cache --virtual .build-deps \
     rm -rf /tmp/*
 
 FROM alpine:latest
-LABEL maintainer "mhiro2 <hirotsu.masaaki@gmail.com>"
+LABEL maintainer="jorin.vermeulen@gmail.com"
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.version=$KEA_DHCP_VERSION
 
 RUN apk --no-cache add \
         bash \
         boost \
         bzip2 \
         libressl \
-        mariadb-client-libs \
+        mariadb-connector-c \
+        mariadb-connector-c-dev \
         zlib
 
 COPY --from=builder /usr/local /usr/local/

@@ -2,8 +2,8 @@ version: '3'
 
 services:
   kea:
-    #build: .
-    image: mhiro2/kea-dhcp-server:latest
+    build: .
+    #image: mhiro2/kea-dhcp-server:latest
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./kea-dhcp4.conf:/usr/local/etc/kea/kea-dhcp4.conf
@@ -13,7 +13,7 @@ services:
     restart: always
 
   kea-db:
-    image: mysql:5.7
+    image: mysql:8.0
     ports:
       - 127.0.0.1:3306:3306
     volumes:
